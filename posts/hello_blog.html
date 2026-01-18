@@ -6,45 +6,68 @@
     <title>文章详情 | Slatyfish</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
-        /* --- 1. 基础背景设置 (关键：消灭黑边) --- */
+        /* =========================================
+           1. 核心变量 (与首页保持风格统一)
+           ========================================= */
+        :root {
+            --primary-color: #2c3e50;
+            --accent-color: #0984e3;
+            --text-main: #2d3436;
+            --text-sub: #636e72;
+
+            /* 文章页专属的高级毛玻璃背景 
+               为了保证阅读体验，透明度比首页稍微高一点 (0.9 -> 0.65)
+               但保留了相同的“左上角亮 -> 右下角透”的光感逻辑
+            */
+            --glass-bg: linear-gradient(135deg, rgba(255, 255, 255, 0.90), rgba(255, 255, 255, 0.65));
+            --glass-border: 1px solid rgba(255, 255, 255, 0.6);
+        }
+
+        /* =========================================
+           2. 基础设置
+           ========================================= */
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
             margin: 0; padding: 0;
-            /* 确保body至少有一屏高，背景图铺满 */
             min-height: 100vh; 
-            /* 使用和主页相同的背景路径（注意 ../ 返回上一级） */
-            background-image: url('../images/background2.png'); 
+            
+            /* 背景图设置 (确保路径正确) */
+            background-image: url('../images/background.png'); 
             background-size: cover;
             background-position: center;
-            background-attachment: fixed; /* 背景固定，滚动时更有层次感 */
+            background-attachment: fixed;
+            background-color: #dfe6e9;
             color: #2d3436;
             
-            /* 使用 Flexbox 让卡片居中显示 */
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 40px 20px; /* 防止卡片贴到屏幕边缘 */
-            box-sizing: border-box;
+            display: flex; justify-content: center; align-items: center;
+            padding: 40px 20px; box-sizing: border-box;
         }
 
-        /* --- 2. 圆角毛玻璃文章卡片 (核心样式) --- */
+        /* =========================================
+           3. 文章卡片 (Glassmorphism 升级版)
+           ========================================= */
         .article-card {
-            /* 复用主页的毛玻璃效果 */
-            background: rgba(255, 255, 255, 0.92); /* 稍微不透明一点，提高阅读体验 */
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.6);
+            /* 核心：应用渐变背景 */
+            background: var(--glass-bg);
             
-            /* 大圆角和阴影 */
+            /* 核心：高斯模糊 */
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            
+            /* 核心：玻璃边缘微光 */
+            border: var(--glass-border);
+            
+            /* 核心：复合阴影 (内发光 + 悬浮投影) */
+            box-shadow: 
+                inset 0 1px 0 0 rgba(255, 255, 255, 0.8), 
+                0 15px 50px -10px rgba(31, 38, 135, 0.1); /* 带一点环境色的柔和阴影 */
+            
+            /* 圆角与尺寸 */
             border-radius: 24px;
-            box-shadow: 0 15px 50px -10px rgba(0, 0, 0, 0.1);
-            
-            /* 尺寸和间距 */
-            width: 100%;
-            max-width: 860px; /* 卡片最大宽度 */
-            padding: 60px;    /* 内部留白 */
-            box-sizing: border-box;
+            width: 100%; max-width: 860px;
+            padding: 60px; box-sizing: border-box;
             line-height: 1.8;
+            transition: transform 0.3s ease;
         }
 
         /* 返回按钮 */
@@ -56,13 +79,13 @@
         .back-btn:hover { color: #0984e3; }
         .back-btn i { margin-right: 8px; }
 
-        /* 文章头部信息 */
-        header { margin-bottom: 40px; border-bottom: 2px solid rgba(0,0,0,0.05); padding-bottom: 30px; }
+        /* 文章头部 */
+        header { margin-bottom: 40px; border-bottom: 2px solid rgba(44, 62, 80, 0.1); padding-bottom: 30px; }
         h1 { margin: 0 0 15px 0; color: #2c3e50; font-size: 2.4em; letter-spacing: -0.5px; }
         .meta-info { color: #636e72; font-size: 0.9em; font-weight: 500; }
         .meta-separator { margin: 0 10px; color: #ccc; }
         
-        /* 标签样式优化 */
+        /* 标签 */
         .article-tag {
             display: inline-block; padding: 2px 10px; border-radius: 4px; 
             font-size: 0.85em; font-weight: 700; margin-left: 10px; vertical-align: middle;
@@ -70,13 +93,23 @@
         .tag-tech { color: #0984e3; background: rgba(9, 132, 227, 0.1); }
         .tag-thinking { color: #d35400; background: rgba(230, 126, 34, 0.1); }
 
-        /* --- 3. 正文排版优化 --- */
+        /* =========================================
+           4. 正文排版
+           ========================================= */
         .content p { margin-bottom: 25px; font-size: 1.12em; color: #2d3436; }
-        .content h2 { margin-top: 50px; font-size: 1.6em; color: #2c3e50; }
+        .content h2 { margin-top: 50px; font-size: 1.6em; color: #2c3e50; border-left: 4px solid var(--accent-color); padding-left: 15px; }
         .content h3 { margin-top: 40px; font-size: 1.3em; color: #444; }
         
-        /* 代码块和图片 */
-        .content code { background: rgba(0,0,0,0.06); padding: 2px 6px; border-radius: 4px; font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace; font-size: 0.9em; color: #c7254e;}
+        /* 代码块 */
+        .content code { 
+            background: rgba(255,255,255,0.5); /* 代码块背景也透一点 */
+            border: 1px solid rgba(0,0,0,0.05);
+            padding: 2px 6px; border-radius: 4px; 
+            font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace; 
+            font-size: 0.9em; color: #c7254e;
+        }
+        
+        /* 图片 */
         .content img { max-width: 100%; border-radius: 12px; margin: 30px 0; box-shadow: 0 8px 20px rgba(0,0,0,0.08); }
         
         /* 引用块 */
@@ -116,9 +149,6 @@
             
             <h2>1. 核心问题回顾</h2>
             <p>在使用标准的 KPConv 进行点云配准时，我们发现在低重叠率的场景下，特征匹配的鲁棒性不足。特别是在处理稀疏点云数据时，传统的卷积算子很难捕捉到足够的上下文信息。</p>
-
-            <!-- <img src="https://via.placeholder.com/800x400?text=Placeholder+Image+For+Structure" alt="结构示意图">
-            <p style="text-align: center; font-size: 0.9em; color: #999; margin-top: -20px;">图 1: 改进前的网络结构示意图</p> -->
 
             <h3>1.1 注意力机制的引入</h3>
             <p>为了解决这个问题，我们尝试在瓶颈层引入 Transformer 结构。通过计算 Self-Attention，模型能够更好地理解全局几何结构。</p>
