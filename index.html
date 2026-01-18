@@ -21,7 +21,7 @@
         }
 
         /* =========================================
-           2. 整体布局 & 滑动机制 (NEW)
+           2. 整体布局 & 滑动机制
            ========================================= */
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
@@ -33,32 +33,28 @@
             background-color: #dfe6e9;
         }
 
-        /* 滑动容器：宽度为200vw，包含两个页面 */
         .app-wrapper {
             display: flex;
             width: 200vw;
             height: 100vh;
-            transition: transform 0.6s cubic-bezier(0.25, 0.8, 0.25, 1); /* 优雅的缓动曲线 */
+            transition: transform 0.6s cubic-bezier(0.25, 0.8, 0.25, 1);
             will-change: transform;
         }
 
-        /* 页面状态类：激活时左移 100vw */
         .app-wrapper.show-comments {
             transform: translateX(-100vw);
         }
 
-        /* 单个页面容器 */
         .page-slide {
             width: 100vw;
             height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
-            flex-shrink: 0; /* 防止被压缩 */
+            flex-shrink: 0;
             position: relative;
         }
 
-        /* 主容器 (原 .main-container) */
         .main-container {
             width: 90vw; max-width: 1200px; height: 90vh;
             display: grid;
@@ -106,14 +102,11 @@
             transition: all 0.3s;
             box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.6), 0 4px 20px 0 rgba(0,0,0,0.05);
         }
-        /* 保持左侧栏卡片原有的微动效，如果不需要可以把 transform 删掉 */
         .sidebar .glass-card:hover {
-            /* transform: translateX(2px);  <-- 你提到取消左侧移动，这里可以注释掉或保留 */
             background: var(--glass-bg-hover);
             box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.8), 0 10px 30px 0 rgba(0,0,0,0.1);
         }
 
-        /* 5.1 Hero 卡片 */
         .hero-card { display: flex; align-items: center; gap: 20px; }
         .hero-avatar { width: 75px; height: 75px; border-radius: 50%; object-fit: cover; border: 3px solid #fff; }
         .hero-info h1 { margin: 0; font-size: 1.6em; color: var(--primary-color); }
@@ -124,7 +117,6 @@
         .social-icons a { color: var(--text-main); margin-right: 15px; font-size: 1.1em; transition: color 0.2s;}
         .social-icons a:hover { color: var(--accent-color); }
 
-        /* 5.2 列表内容 */
         .card-title { 
             font-size: 0.85em; letter-spacing: 1px; color: #888; font-weight: 700; 
             margin-bottom: 15px; text-transform: uppercase; 
@@ -166,7 +158,6 @@
         .item-title a:hover { color: var(--accent-color); }
         .item-excerpt { font-size: 0.95em; color: #555; line-height: 1.6; margin: 0; }
 
-        /* 评论区容器样式 */
         .comments-container {
             width: 70vw; max-width: 900px; height: 85vh;
             background: rgba(255, 255, 255, 0.65);
@@ -178,38 +169,60 @@
             box-shadow: 0 15px 50px rgba(0,0,0,0.1);
         }
         
-        /* 评论区滚动条 */
         .giscus-frame { flex: 1; overflow-y: auto; margin-top: 20px; padding-right: 10px; }
         .giscus-frame::-webkit-scrollbar { width: 6px; }
         .giscus-frame::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.2); border-radius: 3px; }
 
         /* =========================================
-           7. 导航按钮 (NEW)
+           7. 导航按钮 (UPDATED)
            ========================================= */
         .nav-btn {
             position: absolute; top: 50%; transform: translateY(-50%);
-            width: 50px; height: 50px;
+            width: 50px; height: 50px; /* 默认圆形 */
             background: rgba(255,255,255,0.8);
-            border-radius: 50%;
+            border-radius: 30px; /* 改为圆角矩形适应展开 */
             display: flex; align-items: center; justify-content: center;
             font-size: 1.5rem; color: var(--primary-color);
             border: 1px solid rgba(255,255,255,0.8);
             cursor: pointer;
             box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             z-index: 100;
+            overflow: hidden; /* 隐藏未展开的文字 */
+            
+            /* 关键动画属性 */
+            transition: width 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), 
+                        background 0.3s, 
+                        transform 0.3s,
+                        box-shadow 0.3s;
         }
+
+        /* 悬停时的展开效果 */
         .nav-btn:hover {
+            width: 140px; /* 展开宽度以容纳文字 */
             background: #fff;
             color: var(--accent-color);
-            transform: translateY(-50%) scale(1.1);
             box-shadow: 0 8px 25px rgba(9, 132, 227, 0.25);
         }
 
-        /* 首页的向右按钮 */
+        /* 文字标签样式 */
+        .nav-label {
+            max-width: 0;
+            opacity: 0;
+            white-space: nowrap;
+            font-size: 1rem;
+            font-weight: 600;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+        }
+
+        /* 悬停时文字出现 */
+        .nav-btn:hover .nav-label {
+            max-width: 100px;
+            opacity: 1;
+            margin-right: 10px; /* 文字和箭头之间的间距 */
+        }
+
         .to-comments-btn { right: 3vw; }
-        
-        /* 评论区的返回按钮 */
         .to-home-btn { left: 3vw; }
 
         @media (max-width: 900px) {
@@ -218,7 +231,7 @@
             .page-slide { width: 100vw; height: auto; padding: 20px 0; }
             .main-container { display: flex; flex-direction: column; height: auto; width: 95vw; }
             .comments-container { width: 90vw; height: 600px; }
-            .nav-btn { display: none; } /* 移动端隐藏按钮，靠自然滚动 */
+            .nav-btn { display: none; }
         }
     </style>
 </head>
@@ -323,11 +336,12 @@
                             <p class="item-excerpt">近几年越来越觉得自己像永远在推巨石的西西弗斯，读大学、卷绩点、保研、读研……似乎每达成一个节点之后都没有那种明显的成就感，而随之而来的是下一轮巨石滚下山坡...</p>
                         </div>
                         
-                        </div>
+                    </div>
                 </main>
             </div>
 
             <div class="nav-btn to-comments-btn" onclick="toggleView('comments')" title="前往评论区">
+                <span class="nav-label">评论区</span>
                 <i class="fas fa-chevron-right"></i>
             </div>
         </div>
