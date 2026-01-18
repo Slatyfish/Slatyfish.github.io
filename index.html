@@ -11,175 +11,143 @@
            1. 核心变量
            ========================================= */
         :root {
-            --primary-color: #2c3e50;
-            --accent-color: #0984e3;
-            --text-main: #2d3436;
-            --text-sub: #636e72;
+            --primary-color: #2c3e50; /* 深蓝灰 */
+            --accent-color: #0984e3;  /* 亮蓝 */
+            --text-main: #2d3436;     /* 黑灰 */
+            --text-sub: #636e72;      /* 中灰 */
             --line-color: rgba(44, 62, 80, 0.15);
 
-            /* 高级毛玻璃背景 */
+            /* 统一的毛玻璃背景 */
             --glass-bg: linear-gradient(135deg, rgba(255, 255, 255, 0.65), rgba(255, 255, 255, 0.35));
             --glass-bg-hover: linear-gradient(135deg, rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.5));
             --glass-border: 1px solid rgba(255, 255, 255, 0.45);
         }
 
         /* =========================================
-           2. 整体布局 (Dashboard Layout)
+           2. 整体布局
            ========================================= */
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
             margin: 0; padding: 0;
             height: 100vh; width: 100vw;
-            overflow: hidden; /* 防止整个页面出现滚动条 */
-            
-            /* 背景图 */
+            overflow: hidden; 
             background-image: url('images/background2.png'); 
             background-size: cover; background-position: center;
             background-color: #dfe6e9;
-            
-            /* 居中显示主容器 */
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            display: flex; align-items: center; justify-content: center;
         }
 
-        /* 主容器：限制最大宽度，形成仪表盘感觉 */
         .main-container {
-            width: 90vw;
-            max-width: 1200px;
-            height: 90vh; /* 留出一点边距，不填满屏幕 */
-            
+            width: 90vw; max-width: 1200px; height: 90vh;
             display: grid;
-            grid-template-columns: 360px 1fr; /* 左侧固定360px，右侧自适应 */
+            grid-template-columns: 410px 1fr; /* 左侧固定400px，右侧自适应 */
             gap: 25px;
         }
 
         /* =========================================
-           3. 左侧栏 (Sidebar - Profile)
+           3. 左侧栏 (Sidebar)
            ========================================= */
         .sidebar {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-            overflow-y: auto; /* 如果屏幕太矮，左侧也可以滚动 */
-            padding-right: 5px; /* 留点空隙给滚动条 */
+            display: flex; flex-direction: column; gap: 18px;
+            overflow-y: auto; padding-right: 5px;
         }
-        
-        /* 隐藏左侧滚动条但保留功能 */
         .sidebar::-webkit-scrollbar { width: 0; }
 
         /* =========================================
-           4. 右侧栏 (Content - Timeline)
+           4. 右侧栏 (Content)
            ========================================= */
         .content-area {
-            /* 这是一个大的玻璃容器，包裹随想录 */
-            background: rgba(255, 255, 255, 0.5); /*稍微透一点 */
+            background: rgba(255, 255, 255, 0.5);
             backdrop-filter: blur(20px);
             border: var(--glass-border);
             border-radius: 24px;
             padding: 40px;
-            
-            display: flex;
-            flex-direction: column;
-            overflow: hidden; /* 内部滚动 */
+            display: flex; flex-direction: column; overflow: hidden;
             box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.05);
         }
 
         .timeline-scroll-container {
-            flex: 1;
-            overflow-y: auto; /* 只有这个区域滚动 */
-            padding-right: 15px;
-            margin-top: 20px;
+            flex: 1; overflow-y: auto; padding-right: 15px; margin-top: 20px;
         }
-
-        /* 自定义右侧滚动条 */
         .timeline-scroll-container::-webkit-scrollbar { width: 6px; }
-        .timeline-scroll-container::-webkit-scrollbar-track { background: transparent; }
         .timeline-scroll-container::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.1); border-radius: 3px; }
-        .timeline-scroll-container::-webkit-scrollbar-thumb:hover { background: rgba(0,0,0,0.2); }
 
         /* =========================================
-           5. 卡片样式 (Bento Cards)
+           5. 卡片样式 (通用)
            ========================================= */
         .glass-card {
             background: var(--glass-bg);
             backdrop-filter: blur(24px);
             border: var(--glass-border);
             border-radius: 20px;
-            padding: 25px;
+            padding: 24px;
             transition: all 0.3s;
             box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.6), 0 4px 20px 0 rgba(0,0,0,0.05);
         }
-        
         .glass-card:hover {
-            transform: translateY(-3px);
+            transform: translateX(2px);
             background: var(--glass-bg-hover);
             box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.8), 0 10px 30px 0 rgba(0,0,0,0.1);
         }
 
-        /* 5.1 名片 Hero */
-        .hero-card {
-            display: flex; align-items: center; gap: 20px;
-        }
-        .hero-avatar {
-            width: 70px; height: 70px; border-radius: 50%; 
-            object-fit: cover; border: 3px solid #fff;
-        }
+        /* 5.1 Hero 卡片 */
+        .hero-card { display: flex; align-items: center; gap: 20px; }
+        .hero-avatar { width: 75px; height: 75px; border-radius: 50%; object-fit: cover; border: 3px solid #fff; }
         .hero-info h1 { margin: 0; font-size: 1.6em; color: var(--primary-color); }
-        .hero-info p { margin: 4px 0 0 0; color: var(--text-sub); font-size: 0.85em; }
+        .hero-info p { margin: 4px 0 0 0; color: var(--text-sub); font-size: 0.9em; font-weight: 500; }
+        .location-tag { margin-top: 8px; font-size: 0.85em; color: #636e72; display: flex; align-items: center; gap: 6px; }
+        .location-tag i { color: var(--accent-color); }
         .social-icons { margin-top: 12px; }
-        .social-icons a { color: var(--text-main); margin-right: 12px; font-size: 1.1em; }
+        .social-icons a { color: var(--text-main); margin-right: 15px; font-size: 1.1em; transition: color 0.2s;}
         .social-icons a:hover { color: var(--accent-color); }
 
-        /* 5.2 技能与研究 */
-        .card-title { font-size: 0.7em; letter-spacing: 1px; color: #888; font-weight: 700; margin-bottom: 12px; text-transform: uppercase; }
-        .skill-list { display: flex; flex-wrap: wrap; gap: 8px; }
-        .skill-tag { font-size: 0.75em; padding: 4px 10px; background: rgba(255,255,255,0.4); border-radius: 6px; color: var(--primary-color); font-weight: 600; border: 1px solid rgba(255,255,255,0.2); }
-
-        /* 5.3 音乐卡片 (简化版，适应侧边栏) */
-        .music-card { display: flex; align-items: center; gap: 15px; }
-        .music-icon { width: 42px; height: 42px; background: var(--primary-color); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: #fff; flex-shrink: 0; }
-        .music-info { flex: 1; min-width: 0; }
-        .music-title { font-size: 0.85em; font-weight: bold; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .music-artist { font-size: 0.75em; color: #666; }
-        .music-bar { height: 4px; background: rgba(0,0,0,0.1); margin-top: 6px; border-radius: 2px; position: relative; }
-        .music-progress { width: 60%; height: 100%; background: var(--accent-color); border-radius: 2px; }
+        /* 5.2 列表内容 & 特效 */
+        .card-title { 
+            font-size: 0.85em; letter-spacing: 1px; color: #888; font-weight: 700; 
+            margin-bottom: 15px; text-transform: uppercase; 
+            display: flex; align-items: center; gap: 8px; 
+            border-bottom: 2px solid rgba(44, 62, 80, 0.2); padding-bottom: 10px;
+        }
+        .bio-list { display: flex; flex-direction: column; gap: 10px; }
+        .bio-item { font-size: 0.9em; line-height: 1.6; color: #444; display: flex; align-items: baseline; gap: 8px; }
+        .bio-item i { width: 16px; color: var(--text-sub); opacity: 0.7; font-size: 0.9em; }
+        
+        /* 高亮标记 */
+        .hl { background: rgba(9, 132, 227, 0.1); color: #0984e3; padding: 0 4px; border-radius: 4px; font-weight: 600; margin: 0 2px; }
+        .hl-p { background: rgba(108, 92, 231, 0.1); color: #6c5ce7; padding: 0 4px; border-radius: 4px; font-weight: 600; margin: 0 2px; }
+        
+        /* 蒙版/防剧透特效 */
+        .spoiler {
+            background-color: #2d3436; color: transparent; padding: 0 6px; border-radius: 4px; 
+            cursor: pointer; transition: all 0.3s ease; user-select: none; margin: 0 2px;
+        }
+        .spoiler:hover { background-color: rgba(108, 92, 231, 0.15); color: #6c5ce7; font-weight: 600; }
 
         /* =========================================
-           6. 时间轴样式 (Timeline Items)
+           6. Timeline (右侧)
            ========================================= */
-        .timeline-header {
-            margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center;
-        }
+        .timeline-header { margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
         .timeline-header h2 { margin: 0; font-size: 1.5em; color: var(--primary-color); }
         .badge-count { background: #fff; padding: 2px 10px; border-radius: 12px; font-size: 0.8em; color: var(--text-sub); font-weight: bold; }
 
         .timeline-item {
             margin-bottom: 20px; padding: 25px;
-            background: rgba(255,255,255,0.4); /* 比左侧卡片更透一点 */
-            border-radius: 16px; border: 1px solid rgba(255,255,255,0.3);
+            background: rgba(255,255,255,0.4); border-radius: 16px; border: 1px solid rgba(255,255,255,0.3);
             transition: all 0.3s;
         }
         .timeline-item:hover { background: rgba(255,255,255,0.6); transform: translateX(5px); }
-
         .item-meta { display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 0.85em; }
         .date { color: var(--text-sub); font-family: monospace; }
-        
         .tag { padding: 2px 8px; border-radius: 4px; font-weight: 700; }
         .tag.tech { background: rgba(9, 132, 227, 0.1); color: #0984e3; }
         .tag.thinking { background: rgba(230, 126, 34, 0.1); color: #d35400; }
-
         .item-title a { font-size: 1.2em; font-weight: 700; color: var(--primary-color); text-decoration: none; display: block; margin-bottom: 8px; }
         .item-title a:hover { color: var(--accent-color); }
         .item-excerpt { font-size: 0.95em; color: #555; line-height: 1.6; margin: 0; }
 
-        /* 移动端适配 */
         @media (max-width: 900px) {
             body { height: auto; overflow-y: auto; padding: 20px 0; }
-            .main-container {
-                display: flex; flex-direction: column;
-                height: auto; width: 95vw;
-            }
+            .main-container { display: flex; flex-direction: column; height: auto; width: 95vw; }
             .sidebar { overflow: visible; }
             .content-area { height: 600px; padding: 20px; }
         }
@@ -195,46 +163,60 @@
                 <img src="images\avatar.jpg" alt="Avatar" class="hero-avatar">
                 <div class="hero-info">
                     <h1>Slatyfish</h1>
-                    <p>DL Researcher / Student</p>
+                    <p>兵器科学与技术硕士在读</p>
+                    <div class="location-tag">
+                        <i class="fas fa-map-marker-alt"></i> 西安 / 永州
+                    </div>
                     <div class="social-icons">
                         <a href="https://github.com/Slatyfish"><i class="fab fa-github"></i></a>
                         <a href="mailto:2530943724@qq.com"><i class="fas fa-envelope"></i></a>
+                        <a href="#"><i class="fas fa-rss"></i></a>
                     </div>
                 </div>
             </div>
 
             <div class="glass-card">
-                <div class="card-title"><i class="fas fa-code"></i> Tech Stack</div>
-                <div class="skill-list">
-                    <span class="skill-tag">Python</span>
-                    <span class="skill-tag">C++ 17</span>
-                    <span class="skill-tag">PyTorch</span>
-                    <span class="skill-tag">ROS 2</span>
-                    <span class="skill-tag">TensorRT</span>
+                <div class="card-title"><i class="fas fa-wrench"></i> 研（坐）究（牢）</div>
+                <div class="bio-list">
+                    <div class="bio-item" style="align-items: flex-start;">
+                        <i class="fas fa-microscope" style="margin-top: 5px;"></i>
+                        <span>主攻：<span class="hl">点云匹配</span>、<span class="hl">3D视觉</span>、<span class="hl">SLAM</span></span>
+                    </div>
+                    <div class="bio-item">
+                        <i class="fas fa-code"></i>
+                        <span>Learning：<span class="hl">C++&SLAM</span> 基础补强修炼中...🔨</span>
+                    </div>
                 </div>
             </div>
 
             <div class="glass-card">
-                <div class="card-title"><i class="fas fa-microscope"></i> Research</div>
-                <div class="skill-list">
-                    <span class="skill-tag">Point Cloud</span>
-                    <span class="skill-tag">Registration</span>
-                    <span class="skill-tag">Sonar</span>
-                    <span class="skill-tag">A-Predator</span>
+                <div class="card-title"><i class="fas fa-gamepad"></i> 兴趣爱好</div>
+                <div class="bio-list">
+                    <div class="bio-item">
+                        <i class="fas fa-ghost"></i>
+                        <span>核心玩家<span class="spoiler">（魂老嗨）</span>、独立游戏爱好者<span class="spoiler">（樱桃社的🐕）</span></span>
+                    </div>
+                    <div class="bio-item">
+                        <i class="fas fa-car"></i>
+                        <span><span class="hl-p">数码</span> 与 <span class="hl-p">汽车</span> 爱好者</span>
+                    </div>
+                    <div class="bio-item">
+                        <i class="fas fa-music"></i>
+                        <span>音乐杂食：近期爱听 <span class="hl-p">器乐摇滚</span> & <span class="hl-p">后摇</span></span>
+                    </div>
+                    <div class="bio-item">
+                        <i class="fas fa-book-open"></i>
+                        <span>尝试：<span class="hl-p">看书</span>、自然风光、<span class="hl-p">旅行</span></span>
+                    </div>
+                    <div class="bio-item">
+                        <i class="fas fa-tv"></i>
+                        <span><span class="spoiler">搞点二次元</span></span>
+                    </div>
                 </div>
             </div>
 
-            <div class="glass-card music-card">
-                <div class="music-icon"><i class="fas fa-music"></i></div>
-                <div class="music-info">
-                    <div class="music-title">Explosions In The Sky</div>
-                    <div class="music-artist">Post-Rock Playing...</div>
-                    <div class="music-bar"><div class="music-progress"></div></div>
-                </div>
-            </div>
-
-            <div class="glass-card" style="font-size:0.9em; color:#666; font-style:italic; line-height:1.6;">
-                “否定性是生命的活力...即使是纯粹的物理生命。”
+            <div class="glass-card" style="font-size:0.9em; color:#666; font-style:italic; line-height:1.6; padding: 30px 45px;">
+                “否定性是生命的活力。即使是纯粹的物理生命，也只有当它包含其自身的对立面并在其中保持自身时，才是生命。”
                 <div style="text-align:right; margin-top:5px; font-size:0.8em;">— Byung-Chul Han</div>
             </div>
 
@@ -243,7 +225,7 @@
         <main class="content-area">
             <div class="timeline-header">
                 <h2>Timeline</h2>
-                <span class="badge-count">4 Posts</span>
+                <span class="badge-count">Latest</span>
             </div>
             
             <div class="timeline-scroll-container">
@@ -258,7 +240,7 @@
                     </div>
                     <p class="item-excerpt">重新梳理了技术路线图。为了解释清楚 A-Predator 的改进点，我把整个 Encoder-Decoder 的注意力机制部分画了新的示意图。</p>
                 </div>
-
+                
                 <div class="timeline-item">
                     <div class="item-meta">
                         <span class="date">2026-01-14</span>
