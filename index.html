@@ -11,20 +11,17 @@
            1. 核心变量
            ========================================= */
         :root {
-            --primary-color: #2c3e50; /* 深蓝灰 */
-            --accent-color: #0984e3;  /* 亮蓝 */
-            --text-main: #2d3436;     /* 黑灰 */
-            --text-sub: #636e72;      /* 中灰 */
-            --line-color: rgba(44, 62, 80, 0.15);
-
-            /* 统一的毛玻璃背景 */
+            --primary-color: #2c3e50;
+            --accent-color: #0984e3;
+            --text-main: #2d3436;
+            --text-sub: #636e72;
             --glass-bg: linear-gradient(135deg, rgba(255, 255, 255, 0.65), rgba(255, 255, 255, 0.35));
             --glass-bg-hover: linear-gradient(135deg, rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.5));
             --glass-border: 1px solid rgba(255, 255, 255, 0.45);
         }
 
         /* =========================================
-           2. 整体布局
+           2. 整体布局 & 滑动机制 (NEW)
            ========================================= */
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
@@ -34,13 +31,38 @@
             background-image: url('images/background.png'); 
             background-size: cover; background-position: center;
             background-color: #dfe6e9;
-            display: flex; align-items: center; justify-content: center;
         }
 
+        /* 滑动容器：宽度为200vw，包含两个页面 */
+        .app-wrapper {
+            display: flex;
+            width: 200vw;
+            height: 100vh;
+            transition: transform 0.6s cubic-bezier(0.25, 0.8, 0.25, 1); /* 优雅的缓动曲线 */
+            will-change: transform;
+        }
+
+        /* 页面状态类：激活时左移 100vw */
+        .app-wrapper.show-comments {
+            transform: translateX(-100vw);
+        }
+
+        /* 单个页面容器 */
+        .page-slide {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0; /* 防止被压缩 */
+            position: relative;
+        }
+
+        /* 主容器 (原 .main-container) */
         .main-container {
             width: 90vw; max-width: 1200px; height: 90vh;
             display: grid;
-            grid-template-columns: 410px 1fr; /* 左侧固定400px，右侧自适应 */
+            grid-template-columns: 410px 1fr;
             gap: 25px;
         }
 
@@ -84,8 +106,9 @@
             transition: all 0.3s;
             box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.6), 0 4px 20px 0 rgba(0,0,0,0.05);
         }
-        .glass-card:hover {
-            transform: translateX(2px);
+        /* 保持左侧栏卡片原有的微动效，如果不需要可以把 transform 删掉 */
+        .sidebar .glass-card:hover {
+            /* transform: translateX(2px);  <-- 你提到取消左侧移动，这里可以注释掉或保留 */
             background: var(--glass-bg-hover);
             box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.8), 0 10px 30px 0 rgba(0,0,0,0.1);
         }
@@ -101,7 +124,7 @@
         .social-icons a { color: var(--text-main); margin-right: 15px; font-size: 1.1em; transition: color 0.2s;}
         .social-icons a:hover { color: var(--accent-color); }
 
-        /* 5.2 列表内容 & 特效 */
+        /* 5.2 列表内容 */
         .card-title { 
             font-size: 0.85em; letter-spacing: 1px; color: #888; font-weight: 700; 
             margin-bottom: 15px; text-transform: uppercase; 
@@ -112,11 +135,9 @@
         .bio-item { font-size: 0.9em; line-height: 1.6; color: #444; display: flex; align-items: baseline; gap: 8px; }
         .bio-item i { width: 16px; color: var(--text-sub); opacity: 0.7; font-size: 0.9em; }
         
-        /* 高亮标记 */
         .hl { background: rgba(9, 132, 227, 0.1); color: #0984e3; padding: 0 4px; border-radius: 4px; font-weight: 600; margin: 0 2px; }
         .hl-p { background: rgba(108, 92, 231, 0.1); color: #6c5ce7; padding: 0 4px; border-radius: 4px; font-weight: 600; margin: 0 2px; }
         
-        /* 蒙版/防剧透特效 */
         .spoiler {
             background-color: #2d3436; color: transparent; padding: 0 6px; border-radius: 4px; 
             cursor: pointer; transition: all 0.3s ease; user-select: none; margin: 0 2px;
@@ -124,7 +145,7 @@
         .spoiler:hover { background-color: rgba(108, 92, 231, 0.15); color: #6c5ce7; font-weight: 600; }
 
         /* =========================================
-           6. Timeline (右侧)
+           6. Timeline & 评论区样式
            ========================================= */
         .timeline-header { margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
         .timeline-header h2 { margin: 0; font-size: 1.5em; color: var(--primary-color); }
@@ -145,147 +166,216 @@
         .item-title a:hover { color: var(--accent-color); }
         .item-excerpt { font-size: 0.95em; color: #555; line-height: 1.6; margin: 0; }
 
+        /* 评论区容器样式 */
+        .comments-container {
+            width: 70vw; max-width: 900px; height: 85vh;
+            background: rgba(255, 255, 255, 0.65);
+            backdrop-filter: blur(25px);
+            border: var(--glass-border);
+            border-radius: 24px;
+            padding: 40px;
+            display: flex; flex-direction: column;
+            box-shadow: 0 15px 50px rgba(0,0,0,0.1);
+        }
+        
+        /* 评论区滚动条 */
+        .giscus-frame { flex: 1; overflow-y: auto; margin-top: 20px; padding-right: 10px; }
+        .giscus-frame::-webkit-scrollbar { width: 6px; }
+        .giscus-frame::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.2); border-radius: 3px; }
+
+        /* =========================================
+           7. 导航按钮 (NEW)
+           ========================================= */
+        .nav-btn {
+            position: absolute; top: 50%; transform: translateY(-50%);
+            width: 50px; height: 50px;
+            background: rgba(255,255,255,0.8);
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.5rem; color: var(--primary-color);
+            border: 1px solid rgba(255,255,255,0.8);
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: 100;
+        }
+        .nav-btn:hover {
+            background: #fff;
+            color: var(--accent-color);
+            transform: translateY(-50%) scale(1.1);
+            box-shadow: 0 8px 25px rgba(9, 132, 227, 0.25);
+        }
+
+        /* 首页的向右按钮 */
+        .to-comments-btn { right: 3vw; }
+        
+        /* 评论区的返回按钮 */
+        .to-home-btn { left: 3vw; }
+
         @media (max-width: 900px) {
-            body { height: auto; overflow-y: auto; padding: 20px 0; }
+            body { height: auto; overflow-y: auto; padding: 0; overflow-x: hidden; }
+            .app-wrapper { width: 100vw; flex-direction: column; transform: none !important; height: auto; }
+            .page-slide { width: 100vw; height: auto; padding: 20px 0; }
             .main-container { display: flex; flex-direction: column; height: auto; width: 95vw; }
-            .sidebar { overflow: visible; }
-            .content-area { height: 600px; padding: 20px; }
+            .comments-container { width: 90vw; height: 600px; }
+            .nav-btn { display: none; } /* 移动端隐藏按钮，靠自然滚动 */
         }
     </style>
 </head>
 <body>
 
-    <div class="main-container">
+    <div class="app-wrapper" id="appWrapper">
         
-        <aside class="sidebar">
+        <div class="page-slide">
             
-            <div class="glass-card hero-card">
-                <img src="images\avatar.jpg" alt="Avatar" class="hero-avatar">
-                <div class="hero-info">
-                    <h1>Slatyfish</h1>
-                    <p>兵器科学与技术硕士在读</p>
-                    <div class="location-tag">
-                        <i class="fas fa-map-marker-alt"></i> 西安 / 永州
-                    </div>
-                    <div class="social-icons">
-                        <a href="https://github.com/Slatyfish"><i class="fab fa-github"></i></a>
-                        <a href="mailto:2530943724@qq.com"><i class="fas fa-envelope"></i></a>
-                        <a href="#"><i class="fas fa-rss"></i></a>
-                    </div>
-                </div>
-            </div>
-
-            <div class="glass-card">
-                <div class="card-title"><i class="fas fa-wrench"></i> 研究（搬砖）</div>
-                <div class="bio-list">
-                    <div class="bio-item" style="align-items: flex-start;">
-                        <i class="fas fa-microscope" style="margin-top: 5px;"></i>
-                        <span>主攻：<span class="hl">点云匹配</span>、<span class="hl">3D视觉</span>、<span class="hl">SLAM</span></span>
-                    </div>
-                    <div class="bio-item">
-                        <i class="fas fa-code"></i>
-                        <span>Learning：<span class="hl">C++&SLAM</span> 基础补强修炼中...🔨</span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="glass-card">
-                <div class="card-title"><i class="fas fa-gamepad"></i> 兴趣爱好</div>
-                <div class="bio-list">
-                    <div class="bio-item">
-                        <i class="fas fa-ghost"></i>
-                        <span>核心玩家<span class="spoiler">（魂老嗨）</span>、独立游戏爱好者<span class="spoiler">（樱桃社的🐕）</span></span>
-                    </div>
-                    <div class="bio-item">
-                        <i class="fas fa-car"></i>
-                        <span><span class="hl-p">数码</span> 与 <span class="hl-p">汽车</span> 爱好者</span>
-                    </div>
-                    <div class="bio-item">
-                        <i class="fas fa-music"></i>
-                        <span>音乐杂食：近期爱听 <span class="hl-p">器乐摇滚</span> & <span class="hl-p">后摇</span></span>
-                    </div>
-                    <div class="bio-item">
-                        <i class="fas fa-book-open"></i>
-                        <span>尝试：<span class="hl-p">看书</span>、自然风光、<span class="hl-p">旅行</span></span>
-                    </div>
-                    <div class="bio-item">
-                        <i class="fas fa-tv"></i>
-                        <span><span class="spoiler">搞点二次元</span></span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="glass-card" style="padding: 30px 40px; display: flex; flex-direction: column; gap: 10px;">
-                <div style="font-size: 1.1em; color: #2d3436; font-weight: 600; letter-spacing: 1px;">
-                    “我们必须想象西西弗斯是幸福的”
-                </div>
+            <div class="main-container">
                 
-                <div style="font-size: 0.9em; color: #888; font-family: Georgia, serif; font-style: italic;">
-                    Il faut imaginer Sisyphe heureux.
-                </div>
-                
-                <div style="text-align: right; margin-top: 15px; font-size: 0.85em; color: var(--accent-color); font-weight: bold;">
-                    <span style="opacity:0.5; margin-right:5px;">—</span> Albert Camus
-                </div>
+                <aside class="sidebar">
+                    
+                    <div class="glass-card hero-card">
+                        <img src="images\avatar.jpg" alt="Avatar" class="hero-avatar">
+                        <div class="hero-info">
+                            <h1>Slatyfish</h1>
+                            <p>兵器科学与技术硕士在读</p>
+                            <div class="location-tag">
+                                <i class="fas fa-map-marker-alt"></i> 西安 / 永州
+                            </div>
+                            <div class="social-icons">
+                                <a href="https://github.com/Slatyfish"><i class="fab fa-github"></i></a>
+                                <a href="mailto:2530943724@qq.com"><i class="fas fa-envelope"></i></a>
+                                <a href="#"><i class="fas fa-rss"></i></a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="glass-card">
+                        <div class="card-title"><i class="fas fa-wrench"></i> 研究（搬砖）</div>
+                        <div class="bio-list">
+                            <div class="bio-item" style="align-items: flex-start;">
+                                <i class="fas fa-microscope" style="margin-top: 5px;"></i>
+                                <span>主攻：<span class="hl">点云匹配</span>、<span class="hl">3D视觉</span>、<span class="hl">SLAM</span></span>
+                            </div>
+                            <div class="bio-item">
+                                <i class="fas fa-code"></i>
+                                <span>Learning：<span class="hl">C++&SLAM</span> 基础补强修炼中...🔨</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="glass-card">
+                        <div class="card-title"><i class="fas fa-gamepad"></i> 兴趣爱好</div>
+                        <div class="bio-list">
+                            <div class="bio-item">
+                                <i class="fas fa-ghost"></i>
+                                <span>核心玩家<span class="spoiler">（魂老嗨）</span>、独立游戏爱好者<span class="spoiler">（樱桃社的🐕）</span></span>
+                            </div>
+                            <div class="bio-item">
+                                <i class="fas fa-car"></i>
+                                <span><span class="hl-p">数码</span> 与 <span class="hl-p">汽车</span> 爱好者</span>
+                            </div>
+                            <div class="bio-item">
+                                <i class="fas fa-music"></i>
+                                <span>音乐杂食：近期爱听 <span class="hl-p">器乐摇滚</span> & <span class="hl-p">后摇</span></span>
+                            </div>
+                            <div class="bio-item">
+                                <i class="fas fa-book-open"></i>
+                                <span>尝试：<span class="hl-p">看书</span>、自然风光、<span class="hl-p">旅行</span></span>
+                            </div>
+                            <div class="bio-item">
+                                <i class="fas fa-tv"></i>
+                                <span><span class="spoiler">搞点二次元</span></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="glass-card" style="padding: 30px 40px; display: flex; flex-direction: column; gap: 10px;">
+                        <div style="font-size: 1.1em; color: #2d3436; font-weight: 600; letter-spacing: 1px;">
+                            “我们必须想象西西弗斯是幸福的”
+                        </div>
+                        
+                        <div style="font-size: 0.9em; color: #888; font-family: Georgia, serif; font-style: italic;">
+                            Il faut imaginer Sisyphe heureux.
+                        </div>
+                        
+                        <div style="text-align: right; margin-top: 15px; font-size: 0.85em; color: var(--accent-color); font-weight: bold;">
+                            <span style="opacity:0.5; margin-right:5px;">—</span> Albert Camus
+                        </div>
+                    </div>
+
+                </aside>
+
+                <main class="content-area">
+                    <div class="timeline-header">
+                        <h2>Timeline</h2>
+                        <span class="badge-count">Latest</span>
+                    </div>
+                    
+                    <div class="timeline-scroll-container">
+                        
+                        <div class="timeline-item">
+                            <div class="item-meta">
+                                <span class="date">2026-01-18</span>
+                                <span class="tag think">THINK</span>
+                            </div>
+                            <div class="item-title">
+                                <a href="posts/hello_blog.html">print("Hello blog")</a>
+                            </div>
+                            <p class="item-excerpt">近几年越来越觉得自己像永远在推巨石的西西弗斯，读大学、卷绩点、保研、读研……似乎每达成一个节点之后都没有那种明显的成就感，而随之而来的是下一轮巨石滚下山坡...</p>
+                        </div>
+                        
+                        </div>
+                </main>
             </div>
 
-        </aside>
-
-        <main class="content-area">
-            <div class="timeline-header">
-                <h2>Timeline</h2>
-                <span class="badge-count">Latest</span>
+            <div class="nav-btn to-comments-btn" onclick="toggleView('comments')" title="前往评论区">
+                <i class="fas fa-chevron-right"></i>
             </div>
+        </div>
+
+        <div class="page-slide">
             
-            <div class="timeline-scroll-container">
-                
-                <div class="timeline-item">
-                    <div class="item-meta">
-                        <span class="date">2026-01-18</span>
-                        <span class="tag think">THINK</span>
-                    </div>
-                    <div class="item-title">
-                        <a href="posts/hello_blog.html">print("Hello blog")</a>
-                    </div>
-                    <p class="item-excerpt">近几年越来越觉得自己像永远在推巨石的西西弗斯，读大学、卷绩点、保研、读研……似乎每达成一个节点之后都没有那种明显的成就感，而随之而来的是下一轮巨石滚下山坡...</p>
-                </div>
-                
-                <!-- <div class="timeline-item">
-                    <div class="item-meta">
-                        <span class="date">2026-01-14</span>
-                        <span class="tag tech">TECH</span>
-                    </div>
-                    <div class="item-title">
-                        <a href="#">C++ 智能指针与 ROS 回调陷阱</a>
-                    </div>
-                    <p class="item-excerpt">记录一次惨痛的 Debug 经历：在 ROS 的 Subscriber 回调中使用 shared_ptr 导致了循环引用。</p>
-                </div>
-
-                <div class="timeline-item">
-                    <div class="item-meta">
-                        <span class="date">2026-01-10</span>
-                        <span class="tag think">THINK</span>
-                    </div>
-                    <div class="item-title">
-                        <a href="posts/article_han.html">阅读：《爱欲之死》与同质化的地狱</a>
-                    </div>
-                    <p class="item-excerpt">韩炳哲说：“大数据让思维变得多余。”当算法精准投喂我们喜欢的信息时，我们是否正在丧失遇见“他者”的能力？</p>
-                </div>
-
-                <div class="timeline-item">
-                    <div class="item-meta">
-                        <span class="date">2025-12-28</span>
-                        <span class="tag tech">TECH</span>
-                    </div>
-                    <div class="item-title">
-                        <a href="#">AGX Orin 部署日志</a>
-                    </div>
-                    <p class="item-excerpt">在 ARM 架构上配置 TensorRT 环境总是充满惊喜。解决了 Docker 容器内无法调用 CUDA 核心的问题。</p>
-                </div> -->
-
+            <div class="nav-btn to-home-btn" onclick="toggleView('home')" title="返回主页">
+                <i class="fas fa-chevron-left"></i>
             </div>
-        </main>
+
+            <div class="comments-container">
+                <div class="timeline-header" style="border-bottom: 2px solid rgba(44,62,80,0.1); padding-bottom: 15px;">
+                    <h2>Guestbook / Comments</h2>
+                    <span class="badge-count" style="background: rgba(9,132,227,0.1); color: #0984e3;">GISCUS</span>
+                </div>
+                
+                <div class="giscus-frame">
+                    <div class="giscus"></div>
+                    <script src="https://giscus.app/client.js"
+                        data-repo="[你的GITHUB用户名]/[你的仓库名]"
+                        data-repo-id="[填写从giscus获取的ID]"
+                        data-category="[填写Category]"
+                        data-category-id="[填写Category ID]"
+                        data-mapping="pathname"
+                        data-strict="0"
+                        data-reactions-enabled="1"
+                        data-emit-metadata="0"
+                        data-input-position="bottom"
+                        data-theme="light"
+                        data-lang="zh-CN"
+                        crossorigin="anonymous"
+                        async>
+                    </script>
+                </div>
+            </div>
+        </div>
+
     </div>
 
+    <script>
+        function toggleView(view) {
+            const wrapper = document.getElementById('appWrapper');
+            if (view === 'comments') {
+                wrapper.classList.add('show-comments');
+            } else {
+                wrapper.classList.remove('show-comments');
+            }
+        }
+    </script>
 </body>
 </html>
