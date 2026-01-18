@@ -3,336 +3,372 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Slatyfish 的小站</title>
+    
+    <title>Slatyfish | Digital Garden</title>
+    
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     
     <style>
-        /* --- 1. 全局变量与重置 --- */
+        /* --- 1. 全局变量定义 (控制整站配色) --- */
         :root {
-            --glass-bg: rgba(255, 255, 255, 0.65); /* 稍微调高透明度 */
-            --glass-border: 1px solid rgba(255, 255, 255, 0.4);
-            --primary-color: #2c3e50;
-            --accent-color: #3498db;
-            --text-main: #333;
-            --text-sub: #666;
+            /* 👇 【这里可以改】 整个网页的配色方案 */
+            --primary-color: #2c3e50; /* 主标题颜色 */
+            --accent-color: #0984e3;  /* 强调色（链接、按钮、进度条颜色） */
+            --text-main: #2d3436;     /* 正文文字颜色 */
+            --text-sub: #636e72;      /* 辅助文字（日期、引用）颜色 */
+            
+            /* 毛玻璃效果设置（建议保留默认，不懂 CSS 慎改） */
+            --glass-bg: rgba(255, 255, 255, 0.85); 
+            --glass-bg-hover: rgba(255, 255, 255, 0.95);
+            --glass-border: 1px solid rgba(255, 255, 255, 0.6);
+            --line-color: rgba(44, 62, 80, 0.15);
         }
 
+        /* --- 2. 基础页面设置 --- */
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            height: 100vh;
-            width: 100vw;
-            overflow: hidden; /* 核心：禁止出现浏览器的滚动条，完全由我们控制 */
+            margin: 0; padding: 0;
+            height: 100vh; width: 100vw;
+            overflow: hidden; 
             
-            /* 背景图 */
-            background-image: url('images/background2.png'); /* 记得替换你的图片 */
+            /* 👇 【这里可以改】 背景图片 */
+            /*把 'images/background2.png' 换成你自己的图片路径，或者直接写网络图片链接 */
+            background-image: url('images/background2.png'); 
+            
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
-            background-color: #f0f2f5;
+            background-color: #dfe6e9; 
         }
 
-        /* --- 2. 滑动容器 (核心逻辑) --- */
-        /* 这是一个 200vw 宽的容器，包含两个 100vw 的页面 */
+        /* 注意：下面的 CSS 样式代码（.slider-container 到 @media 部分）
+           主要控制排版和动画。如果你不懂代码，建议不要修改，
+           只修改上面的 :root 和 body 背景即可。
+        */
+
         .slider-container {
             display: flex;
             width: 200vw; 
             height: 100vh;
-            transition: transform 0.8s cubic-bezier(0.25, 1, 0.5, 1); /* 高级缓动曲线 */
+            transition: transform 0.8s cubic-bezier(0.25, 1, 0.5, 1); 
         }
 
-        /* 每一个“页面”占满一个屏幕宽度 */
         .page-section {
             width: 100vw;
             height: 100vh;
-            overflow-y: auto; /* 允许垂直滚动内容 */
-            position: relative;
+            overflow-y: auto; 
             box-sizing: border-box;
-            padding: 60px 20px; /* 给上下留点空隙 */
+            padding: 40px 20px;
         }
 
-        /* 通用毛玻璃卡片 */
-        .glass-card {
+        .page-section::-webkit-scrollbar { width: 6px; }
+        .page-section::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.1); border-radius: 3px; }
+
+        .glass-card, .bento-card {
             background: var(--glass-bg);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border-radius: 16px;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
             border: var(--glass-border);
-            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1);
-            padding: 40px;
+            border-radius: 16px;
+            box-shadow: 0 4px 24px -1px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
         }
 
-        /* --- 3. 第一页：个人介绍 (偏左布局) --- */
-        .profile-layout {
-            max-width: 600px; /* 限制宽度 */
-            /* 核心：偏左布局。 margin-left 设置为 10%~15% 即可实现偏左 */
+        /* --- 左页布局 --- */
+        .profile-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-auto-rows: auto;
+            gap: 20px;
+            max-width: 600px;
             margin-left: 12vw; 
             margin-right: auto;
+            padding-top: 5vh;
+        }
+
+        .bento-card {
+            padding: 25px;
             display: flex;
             flex-direction: column;
-            gap: 20px; /* 上下栏之间的间距 */
-            height: 80%; /* 整体高度 */
-            justify-content: center; /* 垂直居中 */
+            justify-content: center;
         }
 
-        /* 上栏：头像 + 简述 */
-        .profile-header {
+        .bento-card:hover {
+            transform: translateY(-5px);
+            background: var(--glass-bg-hover);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .card-hero {
+            grid-column: span 2;
             display: flex;
+            flex-direction: row;
             align-items: center;
-            gap: 30px;
+            gap: 25px;
         }
-
-        .avatar {
-            width: 100px;
-            height: 100px;
-            border-radius: 50%;
+        
+        /* 👇 【这里可以改】 头像的大小 */
+        .hero-avatar {
+            width: 80px;  /* 宽度 */
+            height: 80px; /* 高度 */
+            border-radius: 50%; /* 50% 是圆形，0% 是方形 */
             object-fit: cover;
-            border: 3px solid rgba(255,255,255,0.9);
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-        }
-
-        .header-text h1 {
-            margin: 0 0 5px 0;
-            color: var(--primary-color);
-            font-size: 2em;
+            border: 3px solid #fff;
         }
         
-        .header-text p {
-            margin: 0;
-            color: var(--text-sub);
-            font-size: 1.1em;
+        .hero-info h1 { margin: 0; font-size: 1.8em; color: var(--primary-color); }
+        .hero-info p { margin: 5px 0 0 0; color: var(--text-sub); font-size: 0.95em; }
+        .social-icons a { color: var(--text-main); margin-right: 15px; font-size: 1.1em; transition: color 0.2s; }
+        .social-icons a:hover { color: var(--accent-color); }
+
+        .card-title {
+            font-size: 0.75em; text-transform: uppercase; letter-spacing: 1px;
+            color: #888; margin-bottom: 12px; font-weight: 700;
+        }
+        .skill-list { display: flex; flex-wrap: wrap; gap: 8px; }
+        .skill-tag {
+            font-size: 0.8em; padding: 4px 10px;
+            background: rgba(44, 62, 80, 0.05); border-radius: 6px;
+            color: var(--primary-color); font-weight: 600;
         }
 
-        /* 下栏：详细内容 */
-        .profile-detail {
-            line-height: 1.8;
-            font-size: 1em;
-            color: var(--text-main);
+        .card-quote {
+            grid-column: span 2;
+            font-family: "Georgia", serif; font-style: italic; color: #555;
+            position: relative; padding-left: 35px;
+        }
+        .card-quote::before {
+            content: '“'; position: absolute; left: 10px; top: 5px;
+            font-size: 3em; color: rgba(0,0,0,0.1); font-family: sans-serif; font-style: normal;
+        }
+        .quote-author {
+            display: block; text-align: right; font-size: 0.8em;
+            margin-top: 10px; color: #999; font-style: normal; font-family: sans-serif;
         }
 
-        .tags {
-            margin-top: 20px;
+        .card-music {
+            grid-column: span 2; display: flex; align-items: center; gap: 15px;
+            background: rgba(255, 255, 255, 0.9); flex-direction: row;
         }
-        
-        .tag {
-            display: inline-block;
-            background: rgba(52, 152, 219, 0.15);
-            color: var(--accent-color);
-            padding: 5px 12px;
-            border-radius: 20px;
-            font-size: 0.85em;
-            margin-right: 8px;
-            margin-bottom: 8px;
-            font-weight: 600;
+        .music-icon {
+            width: 40px; height: 40px; background: #2d3436; border-radius: 8px;
+            display: flex; align-items: center; justify-content: center; color: #fff;
+        }
+        .music-info { flex: 1; }
+        .music-bar {
+            height: 4px; background: #eee; border-radius: 2px;
+            margin-top: 8px; position: relative; overflow: hidden;
+        }
+        .music-progress {
+            position: absolute; left: 0; top: 0; height: 100%; width: 60%;
+            background: var(--accent-color);
         }
 
-        /* --- 4. 第二页：时间轴 (居中布局) --- */
+        /* --- 右页布局 --- */
         .timeline-layout {
-            max-width: 800px;
-            margin: 0 auto; /* 居中 */
-            padding-bottom: 100px; /* 底部留白，防止滚动到底被遮挡 */
+            max-width: 700px;
+            margin: 0 auto;
+            padding-bottom: 100px;
         }
         
         .timeline-title {
-            text-align: center;
-            font-size: 2em;
-            margin-bottom: 40px;
-            color: #fff;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.3); /* 因为背景可能是图，加阴影防字看不清 */
+            text-align: center; font-size: 1.8em; margin-bottom: 40px;
+            color: var(--primary-color); font-weight: 700;
+            background: rgba(255,255,255,0.6); display: inline-block;
+            padding: 10px 30px; border-radius: 50px;
+            position: relative; left: 50%; transform: translateX(-50%);
         }
 
-        /* 时间轴样式复用 */
         .timeline-item {
             margin-bottom: 30px;
             position: relative;
-            padding-left: 20px;
-            transition: transform 0.3s;
+            border-left: 3px solid var(--line-color);
+            border-radius: 4px 12px 12px 4px;
+            padding: 30px 30px 30px 35px; 
         }
-
+        
         .timeline-item:hover {
-            transform: translateY(-5px); /* 悬浮微微上浮 */
-        }
-
-        .timeline-item::before {
-            content: '';
-            position: absolute;
-            left: -19px; /* 线条位置 */
-            top: 0;
-            bottom: -30px;
-            width: 2px;
-            background: rgba(255,255,255,0.5);
-        }
-
-        /* 最后一个元素不画线 */
-        .timeline-item:last-child::before {
-            display: none;
+            background: var(--glass-bg-hover);
+            transform: translateY(-3px);
+            border-left-color: var(--accent-color);
         }
 
         .timeline-dot {
-            position: absolute;
-            left: -24px;
-            top: 25px;
-            width: 12px;
-            height: 12px;
-            background: var(--accent-color);
-            border-radius: 50%;
-            border: 2px solid #fff;
+            position: absolute; left: -8px; top: 35px;
+            width: 13px; height: 13px;
+            background: #fff; border: 3px solid var(--accent-color); border-radius: 50%;
+            transition: background 0.3s;
         }
+        .timeline-item:hover .timeline-dot { background: var(--accent-color); }
 
         .post-date {
-            font-size: 0.9em;
-            color: #888;
-            margin-bottom: 5px;
-            display: block;
+            font-size: 0.9em; color: var(--text-sub); font-weight: 600;
+            margin-bottom: 8px; display: block; font-family: monospace;
         }
-
-        .post-title {
-            margin: 0 0 10px 0;
-            font-size: 1.4em;
-        }
-        
+        .post-title { margin: 0 0 10px 0; font-size: 1.3em; }
         .post-title a {
-            color: var(--primary-color);
-            text-decoration: none;
+            color: var(--primary-color); text-decoration: none;
+            border-bottom: 1px dashed transparent; transition: border-bottom 0.3s;
+        }
+        .post-title a:hover { border-bottom-color: var(--primary-color); }
+        .post-excerpt {
+            color: #444; font-size: 0.95em; line-height: 1.6; margin: 0;
         }
 
-        /* --- 5. 切换按钮 (悬浮箭头) --- */
         .nav-btn {
-            position: fixed;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 50px;
-            height: 50px;
-            background: rgba(255, 255, 255, 0.2);
-            backdrop-filter: blur(5px);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            color: white; /* 箭头颜色，白色比较百搭 */
-            font-size: 1.5em;
-            border: 1px solid rgba(255,255,255,0.3);
+            position: fixed; top: 50%; transform: translateY(-50%);
+            width: 56px; height: 56px; background: #fff; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; color: var(--primary-color); font-size: 1.2em;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.15); z-index: 999;
             transition: all 0.3s;
-            z-index: 999;
         }
-
         .nav-btn:hover {
-            background: rgba(255, 255, 255, 0.4);
-            transform: translateY(-50%) scale(1.1);
+            transform: translateY(-50%) scale(1.15); color: var(--accent-color);
+        }
+        #btn-next { right: 40px; }
+        #btn-prev { left: 40px; opacity: 0; pointer-events: none; }
+
+        /* --- 新增：分类标签样式 --- */
+        .category-tag {
+            display: inline-block;
+            font-size: 0.75em;
+            padding: 3px 8px;
+            border-radius: 6px;
+            font-weight: 700;
+            margin-bottom: 8px; 
+            margin-right: 10px;
+            letter-spacing: 0.5px;
+            vertical-align: middle;
         }
 
-        /* 右箭头 */
-        #btn-next {
-            right: 30px;
-            /* 增加一点呼吸动画提示用户可以点 */
-            animation: pulse 2s infinite;
+        /* TECH 类的颜色：蓝色系 */
+        .tag-tech {
+            background: rgba(9, 132, 227, 0.15); 
+            color: #0984e3;
         }
 
-        /* 左箭头 (默认隐藏，切过去后再显示，或者一直显示看你喜好) */
-        #btn-prev {
-            left: 30px;
-            opacity: 0; 
-            pointer-events: none; /* 初始状态不可点 */
+        /* THINKING 类的颜色：暖橙色 */
+        .tag-thinking {
+            background: rgba(230, 126, 34, 0.15); /* 淡橙色背景 */
+            color: #d35400;                       /* 深橙色文字，像南瓜色 */
         }
 
-        @keyframes pulse {
-            0% { box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.4); }
-            70% { box-shadow: 0 0 0 10px rgba(255, 255, 255, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(255, 255, 255, 0); }
-        }
-
-        /* --- 响应式适配 (手机端) --- */
         @media (max-width: 768px) {
-            .profile-layout {
-                margin-left: 5vw;
-                margin-right: 5vw;
-                height: auto;
-                margin-top: 40px;
+            .profile-grid {
+                grid-template-columns: 1fr; 
+                margin-left: 0; max-width: 100%; padding: 20px;
             }
-            .profile-header {
-                flex-direction: column;
-                text-align: center;
-            }
-            /* 手机上按钮小一点 */
-            .nav-btn {
-                width: 40px;
-                height: 40px;
-                font-size: 1.2em;
-            }
+            .card-hero, .card-quote, .card-music { grid-column: span 1; }
+            .timeline-layout { padding: 0 10px 80px 10px; }
+            .nav-btn { width: 45px; height: 45px; bottom: 30px; top: auto; transform: none; }
+            #btn-next { right: 20px; } 
+            #btn-prev { left: 20px; }
         }
     </style>
 </head>
 <body>
 
     <div id="btn-next" class="nav-btn" onclick="slideNext()">
-        <i class="fas fa-chevron-right"></i>
+        <i class="fas fa-arrow-right"></i>
     </div>
     <div id="btn-prev" class="nav-btn" onclick="slidePrev()">
-        <i class="fas fa-chevron-left"></i>
+        <i class="fas fa-arrow-left"></i>
     </div>
 
     <div class="slider-container" id="slider">
         
-        <section class="page-section" id="page-profile">
-            <div class="profile-layout">
+        <section class="page-section">
+            <div class="profile-grid">
                 
-                <div class="glass-card profile-header">
-                    <img src="https://ui-avatars.com/api/?name=Slatyfish&background=2c3e50&color=fff" alt="Avatar" class="avatar">
-                    <div class="header-text">
+                <div class="bento-card card-hero">
+                    <img src="images\avatar.jpg" alt="Avatar" class="hero-avatar">
+                    <div class="hero-info">
                         <h1>Slatyfish</h1>
-                        <p>工科硕士 / Deep Learning / 哲学爱好者</p>
+                        <p>Master Student / DL Researcher</p>
+                        
+                        <div class="social-icons" style="margin-top:10px;">
+                            <a href="https://github.com/Slatyfish"><i class="fab fa-github"></i></a>
+                            <a href="2530943724@qq.com"><i class="fas fa-envelope"></i></a>
+                            <a href="#"><i class="fas fa-rss"></i></a>
+                        </div>
                     </div>
                 </div>
 
-                <div class="glass-card profile-detail">
-                    <p>你好，欢迎来到我的精神角落。</p>
-                    <p>目前主要研究方向是<b>水下多波束声纳的点云匹配</b>，日常与 Python, C++ 和 ROS 打交道。热衷于在混乱的代码和有序的逻辑中寻找平衡。</p>
-                    <p>闲暇时我会听后摇（Post-Rock），阅读一些关于“否定性”的哲学文本，或者折腾像这样的小网站。</p>
-                    
-                    <div class="tags">
-                        <span class="tag">#Point Cloud</span>
-                        <span class="tag">#Deep Learning</span>
-                        <span class="tag">#A-Predator</span>
-                        <span class="tag">#Radiohead</span>
-                        <span class="tag">#Byung-Chul Han</span>
+                <div class="bento-card">
+                    <div class="card-title"><i class="fas fa-code"></i> Tech Stack</div>
+                    <div class="skill-list">
+                        <span class="skill-tag">Python</span>
+                        <span class="skill-tag">C++ 17</span>
+                        <span class="skill-tag">PyTorch</span>
+                        <span class="skill-tag">ROS 2</span>
+                        <span class="skill-tag">Docker</span>
+                        <span class="skill-tag">TensorRT</span>
+                    </div>
+                </div>
+
+                <div class="bento-card">
+                    <div class="card-title"><i class="fas fa-microscope"></i> Research Focus</div>
+                    <div class="skill-list">
+                        <span class="skill-tag">Point Cloud</span>
+                        <span class="skill-tag">Registration</span>
+                        <span class="skill-tag">Sonar</span>
+                        <span class="skill-tag">A-Predator</span>
+                        <span class="skill-tag">Edge AI</span>
+                    </div>
+                </div>
+
+                <div class="bento-card card-quote">
+                    “否定性是生命的活力。即使是纯粹的物理生命，也只有当它包含其自身的对立面并在其中保持自身时，才是生命。”
+                    <span class="quote-author">— Byung-Chul Han / Hegel</span>
+                </div>
+
+                <div class="bento-card card-music">
+                    <div class="music-icon">
+                        <i class="fas fa-music"></i>
+                    </div>
+                    <div class="music-info">
+                        <div style="font-size:0.9em; font-weight:bold;">Now Playing: Post-Rock</div>
+                        <div style="font-size:0.8em; color:#666;">Mogwai / Explosions In The Sky</div>
+                        <div class="music-bar">
+                            <div class="music-progress"></div>
+                        </div>
                     </div>
                 </div>
 
             </div>
         </section>
 
-        <section class="page-section" id="page-timeline">
+        <section class="page-section">
             <div class="timeline-layout">
-                <h2 class="timeline-title">随想 & 记录</h2>
+                <h2 class="timeline-title">随想录 / Timeline</h2>
                 
                 <div class="glass-card timeline-item">
                     <div class="timeline-dot"></div>
+                    
                     <span class="post-date">2026-01-18</span>
-                    <h3 class="post-title"><a href="#">准备开题答辩 PPT</a></h3>
-                    <p>将 KPConv 到 A-Predator 的演进逻辑重新梳理了一遍。技术路线图用 LaTeX 重新画了，感觉比 Visio 更有质感。</p>
+
+                    <span class="category-tag tag-tech">TECH</span>
+
+                    <h3 class="post-title">
+                        <a href="posts/article_predator.html">开题答辩准备：从 KPConv 到 A-Predator</a>
+                    </h3>
+                    
+                    <p class="post-excerpt">重新梳理了技术路线图。为了解释清楚 A-Predator 的改进点...</p>
                 </div>
 
                 <div class="glass-card timeline-item">
                     <div class="timeline-dot"></div>
-                    <span class="post-date">2026-01-14</span>
-                    <h3 class="post-title"><a href="#">C++ 智能指针避坑指南</a></h3>
-                    <p>Shared_ptr 虽然好用，但在 ROS 的回调函数里乱传引用很容易导致内存泄露。记录一下 weak_ptr 的妙用。</p>
-                </div>
-
-                <div class="glass-card timeline-item">
-                    <div class="timeline-dot"></div>
+                    
                     <span class="post-date">2026-01-10</span>
-                    <h3 class="post-title"><a href="#">读《爱欲之死》</a></h3>
-                    <p>在这个绩效社会里，我们是否正在失去“无所事事”的能力？</p>
-                </div>
 
-                <div class="glass-card timeline-item">
-                    <div class="timeline-dot"></div>
-                    <span class="post-date">2025-12-25</span>
-                    <h3 class="post-title"><a href="#">配置 AGX Orin 的辛酸泪</a></h3>
-                    <p>Docker 环境下的 CUDA 版本冲突简直是噩梦...</p>
+                    <span class="category-tag tag-thinking">THINKING</span>
+
+                    <h3 class="post-title">
+                        <a href="posts/article_han.html">阅读：《爱欲之死》与同质化的地狱</a>
+                    </h3>
+                    
+                    <p class="post-excerpt">韩炳哲说：“大数据让思维变得多余。”当算法精准投喂...</p>
                 </div>
 
             </div>
@@ -346,25 +382,17 @@
         const btnPrev = document.getElementById('btn-prev');
 
         function slideNext() {
-            // 滑动到 -100vw (即显示右侧页面)
             slider.style.transform = 'translateX(-100vw)';
-            
-            // 隐藏右箭头，显示左箭头
             btnNext.style.opacity = '0';
             btnNext.style.pointerEvents = 'none';
-            
             btnPrev.style.opacity = '1';
             btnPrev.style.pointerEvents = 'auto';
         }
 
         function slidePrev() {
-            // 滑动回 0 (即显示左侧页面)
             slider.style.transform = 'translateX(0)';
-
-            // 隐藏左箭头，显示右箭头
             btnPrev.style.opacity = '0';
             btnPrev.style.pointerEvents = 'none';
-            
             btnNext.style.opacity = '1';
             btnNext.style.pointerEvents = 'auto';
         }
