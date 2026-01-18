@@ -7,270 +7,367 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     
     <style>
-        /* --- 1. 全局设置 --- */
+        /* --- 1. 全局变量与重置 --- */
         :root {
-            --glass-bg: rgba(255, 255, 255, 0.75); /* 背景透明度 */
-            --glass-border: 1px solid rgba(255, 255, 255, 0.3);
+            --glass-bg: rgba(255, 255, 255, 0.65); /* 稍微调高透明度 */
+            --glass-border: 1px solid rgba(255, 255, 255, 0.4);
             --primary-color: #2c3e50;
-            --accent-color: #3498db; /* 链接和强调色 */
-            --text-color: #333;
-            --secondary-text: #666;
+            --accent-color: #3498db;
+            --text-main: #333;
+            --text-sub: #666;
         }
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
             margin: 0;
             padding: 0;
-            min-height: 100vh;
-            color: var(--text-color);
-            line-height: 1.6;
-
-            /* 背景图设置 */
-            background-image: url('images/background2.png'); /* 请替换你的图片路径 */
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden; /* 核心：禁止出现浏览器的滚动条，完全由我们控制 */
+            
+            /* 背景图 */
+            background-image: url('images/background2.png'); /* 记得替换你的图片 */
             background-size: cover;
             background-position: center;
-            background-attachment: fixed; /* 视差滚动效果 */
             background-repeat: no-repeat;
             background-color: #f0f2f5;
         }
 
-        /* --- 2. 布局容器 (Grid) --- */
-        .container {
-            max-width: 1100px;
-            margin: 0 auto;
-            padding: 40px 20px;
-            display: grid;
-            /* 左侧 300px，右侧自适应，中间间距 40px */
-            grid-template-columns: 300px 1fr;
-            gap: 40px;
+        /* --- 2. 滑动容器 (核心逻辑) --- */
+        /* 这是一个 200vw 宽的容器，包含两个 100vw 的页面 */
+        .slider-container {
+            display: flex;
+            width: 200vw; 
+            height: 100vh;
+            transition: transform 0.8s cubic-bezier(0.25, 1, 0.5, 1); /* 高级缓动曲线 */
         }
 
-        /* --- 3. 通用卡片样式 (毛玻璃效果) --- */
+        /* 每一个“页面”占满一个屏幕宽度 */
+        .page-section {
+            width: 100vw;
+            height: 100vh;
+            overflow-y: auto; /* 允许垂直滚动内容 */
+            position: relative;
+            box-sizing: border-box;
+            padding: 60px 20px; /* 给上下留点空隙 */
+        }
+
+        /* 通用毛玻璃卡片 */
         .glass-card {
             background: var(--glass-bg);
-            backdrop-filter: blur(12px); /* 核心：背景模糊 */
-            -webkit-backdrop-filter: blur(12px); /* 兼容 Safari */
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
             border-radius: 16px;
             border: var(--glass-border);
-            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
-            padding: 30px;
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1);
+            padding: 40px;
         }
 
-        /* --- 4. 左侧：个人介绍 (Sticky 固定) --- */
-        .profile-sidebar {
-            /* 让它在滚动时固定在窗口顶部 */
-            position: sticky;
-            top: 40px; 
-            height: fit-content; /* 高度自适应内容 */
-            text-align: center;
+        /* --- 3. 第一页：个人介绍 (偏左布局) --- */
+        .profile-layout {
+            max-width: 600px; /* 限制宽度 */
+            /* 核心：偏左布局。 margin-left 设置为 10%~15% 即可实现偏左 */
+            margin-left: 12vw; 
+            margin-right: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 20px; /* 上下栏之间的间距 */
+            height: 80%; /* 整体高度 */
+            justify-content: center; /* 垂直居中 */
+        }
+
+        /* 上栏：头像 + 简述 */
+        .profile-header {
+            display: flex;
+            align-items: center;
+            gap: 30px;
         }
 
         .avatar {
-            width: 120px;
-            height: 120px;
+            width: 100px;
+            height: 100px;
             border-radius: 50%;
             object-fit: cover;
-            border: 4px solid rgba(255, 255, 255, 0.8);
-            margin-bottom: 15px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            border: 3px solid rgba(255,255,255,0.9);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
         }
 
-        .profile-name {
-            font-size: 1.5em;
-            font-weight: 700;
-            margin: 10px 0 5px;
+        .header-text h1 {
+            margin: 0 0 5px 0;
             color: var(--primary-color);
+            font-size: 2em;
+        }
+        
+        .header-text p {
+            margin: 0;
+            color: var(--text-sub);
+            font-size: 1.1em;
         }
 
-        .profile-bio {
-            font-size: 0.9em;
-            color: var(--secondary-text);
-            margin-bottom: 20px;
+        /* 下栏：详细内容 */
+        .profile-detail {
+            line-height: 1.8;
+            font-size: 1em;
+            color: var(--text-main);
         }
 
         .tags {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 8px;
-            margin-bottom: 25px;
+            margin-top: 20px;
         }
-
+        
         .tag {
-            font-size: 0.75em;
-            background: rgba(52, 152, 219, 0.1);
+            display: inline-block;
+            background: rgba(52, 152, 219, 0.15);
             color: var(--accent-color);
-            padding: 4px 10px;
+            padding: 5px 12px;
             border-radius: 20px;
+            font-size: 0.85em;
+            margin-right: 8px;
+            margin-bottom: 8px;
             font-weight: 600;
         }
 
-        .social-links a {
-            color: var(--secondary-text);
-            font-size: 1.2em;
-            margin: 0 10px;
-            transition: color 0.3s;
-        }
-        .social-links a:hover {
-            color: var(--accent-color);
-        }
-
-        /* --- 5. 右侧：时间轴随想 --- */
-        .main-content {
-            /* 包含时间轴的容器 */
-        }
-
-        .section-title {
-            font-size: 1.2em;
-            margin-bottom: 20px;
-            padding-bottom: 10px;
-            border-bottom: 2px solid rgba(0,0,0,0.05);
-            color: var(--primary-color);
-        }
-
-        /* 时间轴线 */
-        .timeline {
-            position: relative;
-            padding-left: 20px; /* 给左边的线留空间 */
+        /* --- 4. 第二页：时间轴 (居中布局) --- */
+        .timeline-layout {
+            max-width: 800px;
+            margin: 0 auto; /* 居中 */
+            padding-bottom: 100px; /* 底部留白，防止滚动到底被遮挡 */
         }
         
-        /* 那条竖线 */
-        .timeline::before {
-            content: '';
-            position: absolute;
-            left: 0;
-            top: 10px;
-            bottom: 0;
-            width: 2px;
-            background: rgba(0,0,0,0.1);
+        .timeline-title {
+            text-align: center;
+            font-size: 2em;
+            margin-bottom: 40px;
+            color: #fff;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3); /* 因为背景可能是图，加阴影防字看不清 */
         }
 
-        .post-card {
+        /* 时间轴样式复用 */
+        .timeline-item {
             margin-bottom: 30px;
-            position: relative; /* 为了定位那个小圆点 */
+            position: relative;
+            padding-left: 20px;
+            transition: transform 0.3s;
         }
 
-        /* 时间轴上的小圆点 */
-        .post-card::before {
+        .timeline-item:hover {
+            transform: translateY(-5px); /* 悬浮微微上浮 */
+        }
+
+        .timeline-item::before {
             content: '';
             position: absolute;
-            left: -26px; /* 调整圆点位置 */
-            top: 24px;
-            width: 10px;
-            height: 10px;
+            left: -19px; /* 线条位置 */
+            top: 0;
+            bottom: -30px;
+            width: 2px;
+            background: rgba(255,255,255,0.5);
+        }
+
+        /* 最后一个元素不画线 */
+        .timeline-item:last-child::before {
+            display: none;
+        }
+
+        .timeline-dot {
+            position: absolute;
+            left: -24px;
+            top: 25px;
+            width: 12px;
+            height: 12px;
             background: var(--accent-color);
             border-radius: 50%;
             border: 2px solid #fff;
-            box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.3);
         }
 
         .post-date {
-            font-size: 0.85em;
-            color: #999;
-            margin-bottom: 8px;
+            font-size: 0.9em;
+            color: #888;
+            margin-bottom: 5px;
             display: block;
         }
 
         .post-title {
             margin: 0 0 10px 0;
-            font-size: 1.3em;
+            font-size: 1.4em;
         }
         
         .post-title a {
             color: var(--primary-color);
             text-decoration: none;
-            transition: color 0.2s;
-        }
-        
-        .post-title a:hover {
-            color: var(--accent-color);
         }
 
-        .post-excerpt {
-            font-size: 0.95em;
-            color: #555;
-            margin-bottom: 15px;
+        /* --- 5. 切换按钮 (悬浮箭头) --- */
+        .nav-btn {
+            position: fixed;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 50px;
+            height: 50px;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(5px);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: white; /* 箭头颜色，白色比较百搭 */
+            font-size: 1.5em;
+            border: 1px solid rgba(255,255,255,0.3);
+            transition: all 0.3s;
+            z-index: 999;
         }
 
-        .read-more {
-            font-size: 0.9em;
-            color: var(--accent-color);
-            text-decoration: none;
-            font-weight: 600;
+        .nav-btn:hover {
+            background: rgba(255, 255, 255, 0.4);
+            transform: translateY(-50%) scale(1.1);
         }
 
-        /* --- 6. 移动端适配 --- */
+        /* 右箭头 */
+        #btn-next {
+            right: 30px;
+            /* 增加一点呼吸动画提示用户可以点 */
+            animation: pulse 2s infinite;
+        }
+
+        /* 左箭头 (默认隐藏，切过去后再显示，或者一直显示看你喜好) */
+        #btn-prev {
+            left: 30px;
+            opacity: 0; 
+            pointer-events: none; /* 初始状态不可点 */
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(255, 255, 255, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(255, 255, 255, 0); }
+        }
+
+        /* --- 响应式适配 (手机端) --- */
         @media (max-width: 768px) {
-            .container {
-                grid-template-columns: 1fr; /* 手机上变成单列 */
-                padding: 20px;
+            .profile-layout {
+                margin-left: 5vw;
+                margin-right: 5vw;
+                height: auto;
+                margin-top: 40px;
             }
-            .profile-sidebar {
-                position: relative; /* 手机上取消固定定位 */
-                top: 0;
+            .profile-header {
+                flex-direction: column;
+                text-align: center;
+            }
+            /* 手机上按钮小一点 */
+            .nav-btn {
+                width: 40px;
+                height: 40px;
+                font-size: 1.2em;
             }
         }
     </style>
 </head>
 <body>
 
-<div class="container">
-    
-    <aside class="glass-card profile-sidebar">
-        <img src="https://ui-avatars.com/api/?name=Slatyfish&background=random" alt="Avatar" class="avatar">
+    <div id="btn-next" class="nav-btn" onclick="slideNext()">
+        <i class="fas fa-chevron-right"></i>
+    </div>
+    <div id="btn-prev" class="nav-btn" onclick="slidePrev()">
+        <i class="fas fa-chevron-left"></i>
+    </div>
+
+    <div class="slider-container" id="slider">
         
-        <h1 class="profile-name">Slatyfish</h1>
-        <p class="profile-bio">
-            工科硕士研究生 / Deep Learning<br>
-            专注于水下多波束声纳与点云匹配
-        </p>
+        <section class="page-section" id="page-profile">
+            <div class="profile-layout">
+                
+                <div class="glass-card profile-header">
+                    <img src="https://ui-avatars.com/api/?name=Slatyfish&background=2c3e50&color=fff" alt="Avatar" class="avatar">
+                    <div class="header-text">
+                        <h1>Slatyfish</h1>
+                        <p>工科硕士 / Deep Learning / 哲学爱好者</p>
+                    </div>
+                </div>
 
-        <div class="tags">
-            <span class="tag">Python/C++</span>
-            <span class="tag">Point Cloud</span>
-            <span class="tag">Post-Rock</span>
-            <span class="tag">Philosophy</span>
-        </div>
+                <div class="glass-card profile-detail">
+                    <p>你好，欢迎来到我的精神角落。</p>
+                    <p>目前主要研究方向是<b>水下多波束声纳的点云匹配</b>，日常与 Python, C++ 和 ROS 打交道。热衷于在混乱的代码和有序的逻辑中寻找平衡。</p>
+                    <p>闲暇时我会听后摇（Post-Rock），阅读一些关于“否定性”的哲学文本，或者折腾像这样的小网站。</p>
+                    
+                    <div class="tags">
+                        <span class="tag">#Point Cloud</span>
+                        <span class="tag">#Deep Learning</span>
+                        <span class="tag">#A-Predator</span>
+                        <span class="tag">#Radiohead</span>
+                        <span class="tag">#Byung-Chul Han</span>
+                    </div>
+                </div>
 
-        <div class="social-links">
-            <a href="#" title="GitHub"><i class="fab fa-github"></i></a>
-            <a href="#" title="Email"><i class="fas fa-envelope"></i></a>
-            <a href="#" title="RSS"><i class="fas fa-rss"></i></a>
-        </div>
-    </aside>
+            </div>
+        </section>
 
-    <main class="main-content timeline">
-        
-        <div class="glass-card post-card">
-            <span class="post-date">2026-01-18</span>
-            <h2 class="post-title"><a href="#">准备开题答辩的 PPT 架构</a></h2>
-            <p class="post-excerpt">
-                最近一直在整理 A-Predator 模型的实验数据，为了答辩 PPT 的逻辑清晰，重新梳理了从 KPConv 到现有改进的脉络...
-            </p>
-            <a href="#" class="read-more">阅读全文 &rarr;</a>
-        </div>
+        <section class="page-section" id="page-timeline">
+            <div class="timeline-layout">
+                <h2 class="timeline-title">随想 & 记录</h2>
+                
+                <div class="glass-card timeline-item">
+                    <div class="timeline-dot"></div>
+                    <span class="post-date">2026-01-18</span>
+                    <h3 class="post-title"><a href="#">准备开题答辩 PPT</a></h3>
+                    <p>将 KPConv 到 A-Predator 的演进逻辑重新梳理了一遍。技术路线图用 LaTeX 重新画了，感觉比 Visio 更有质感。</p>
+                </div>
 
-        <div class="glass-card post-card">
-            <span class="post-date">2026-01-14</span>
-            <h2 class="post-title"><a href="#">C++ 智能指针与内存管理的复习笔记</a></h2>
-            <p class="post-excerpt">
-                在做 ROS 开发时，内存泄漏是个大坑。今天系统复习了 shared_ptr 和 weak_ptr 的使用场景，特别是如何避免循环引用的问题。
-            </p>
-            <a href="#" class="read-more">阅读全文 &rarr;</a>
-        </div>
+                <div class="glass-card timeline-item">
+                    <div class="timeline-dot"></div>
+                    <span class="post-date">2026-01-14</span>
+                    <h3 class="post-title"><a href="#">C++ 智能指针避坑指南</a></h3>
+                    <p>Shared_ptr 虽然好用，但在 ROS 的回调函数里乱传引用很容易导致内存泄露。记录一下 weak_ptr 的妙用。</p>
+                </div>
 
-        <div class="glass-card post-card">
-            <span class="post-date">2026-01-10</span>
-            <h2 class="post-title"><a href="#">读韩炳哲《爱欲之死》有感</a></h2>
-            <p class="post-excerpt">
-                “他者的消失”是现代社会的通病吗？在算法推荐和同质化的信息流中，我们是否正在丧失对他者的渴望与否定性？
-            </p>
-            <a href="#" class="read-more">阅读全文 &rarr;</a>
-        </div>
+                <div class="glass-card timeline-item">
+                    <div class="timeline-dot"></div>
+                    <span class="post-date">2026-01-10</span>
+                    <h3 class="post-title"><a href="#">读《爱欲之死》</a></h3>
+                    <p>在这个绩效社会里，我们是否正在失去“无所事事”的能力？</p>
+                </div>
 
-    </main>
+                <div class="glass-card timeline-item">
+                    <div class="timeline-dot"></div>
+                    <span class="post-date">2025-12-25</span>
+                    <h3 class="post-title"><a href="#">配置 AGX Orin 的辛酸泪</a></h3>
+                    <p>Docker 环境下的 CUDA 版本冲突简直是噩梦...</p>
+                </div>
 
-</div>
+            </div>
+        </section>
 
+    </div>
+
+    <script>
+        const slider = document.getElementById('slider');
+        const btnNext = document.getElementById('btn-next');
+        const btnPrev = document.getElementById('btn-prev');
+
+        function slideNext() {
+            // 滑动到 -100vw (即显示右侧页面)
+            slider.style.transform = 'translateX(-100vw)';
+            
+            // 隐藏右箭头，显示左箭头
+            btnNext.style.opacity = '0';
+            btnNext.style.pointerEvents = 'none';
+            
+            btnPrev.style.opacity = '1';
+            btnPrev.style.pointerEvents = 'auto';
+        }
+
+        function slidePrev() {
+            // 滑动回 0 (即显示左侧页面)
+            slider.style.transform = 'translateX(0)';
+
+            // 隐藏左箭头，显示右箭头
+            btnPrev.style.opacity = '0';
+            btnPrev.style.pointerEvents = 'none';
+            
+            btnNext.style.opacity = '1';
+            btnNext.style.pointerEvents = 'auto';
+        }
+    </script>
 </body>
 </html>
