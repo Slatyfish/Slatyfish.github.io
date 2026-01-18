@@ -4,82 +4,273 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Slatyfish 的小站</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    
     <style>
-        /* 1. 针对整个网页身体的设置 */
+        /* --- 1. 全局设置 --- */
+        :root {
+            --glass-bg: rgba(255, 255, 255, 0.75); /* 背景透明度 */
+            --glass-border: 1px solid rgba(255, 255, 255, 0.3);
+            --primary-color: #2c3e50;
+            --accent-color: #3498db; /* 链接和强调色 */
+            --text-color: #333;
+            --secondary-text: #666;
+        }
+
         body {
-            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; /* 换个稍微好看点的字体 */
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
             margin: 0;
-            padding: 20px;
-            min-height: 100vh; /* 确保高度至少占满一屏 */
+            padding: 0;
+            min-height: 100vh;
+            color: var(--text-color);
+            line-height: 1.6;
 
-            /* --- 核心：背景图片设置 --- */
-            /* 【重要】把这里的路径换成你实际上传图片的路径 */
-            background-image: url('images/background2.png');
-
-            /* 让图片始终覆盖整个屏幕，可能会裁切掉边缘，但不会变形 */
+            /* 背景图设置 */
+            background-image: url('images/background2.png'); /* 请替换你的图片路径 */
             background-size: cover;
-            /* 图片始终居中显示 */
-            background-position: center center;
-            /* 【可选】背景固定：滚动页面时，背景图不动，有一种高级感。如果不喜欢可以删掉这行 */
-            background-attachment: fixed;
-            /* 防止图片太小时像瓷砖一样重复平铺 */
+            background-position: center;
+            background-attachment: fixed; /* 视差滚动效果 */
             background-repeat: no-repeat;
-            /* 在图片加载出来之前显示的底色 */
-            background-color: #f4f4f4;
+            background-color: #f0f2f5;
         }
 
-        /* 2. 针对内容卡片的设置 */
-        /* 把 header 和 article-card 的通用样式合并写在这里 */
-        .header, .article-card {
-            /* 让内容区域居中，并且不要太宽，方便阅读 */
-            max-width: 800px;
-            margin: 0 auto 20px auto; /* 上右下左：下边距20px隔开卡片，左右自动居中 */
+        /* --- 2. 布局容器 (Grid) --- */
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            display: grid;
+            /* 左侧 300px，右侧自适应，中间间距 40px */
+            grid-template-columns: 300px 1fr;
+            gap: 40px;
+        }
+
+        /* --- 3. 通用卡片样式 (毛玻璃效果) --- */
+        .glass-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px); /* 核心：背景模糊 */
+            -webkit-backdrop-filter: blur(12px); /* 兼容 Safari */
+            border-radius: 16px;
+            border: var(--glass-border);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
             padding: 30px;
-            border-radius: 12px; /* 圆角稍微大一点 */
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1); /* 加一点阴影增加立体感 */
-
-            /* --- 核心：半透明背景 --- */
-            /* 使用 rgba 颜色模式。前三个 255 是白色，最后一个 0.85 是透明度 */
-            /* 透明度范围 0.0 (全透) 到 1.0 (不透)，可以自己调整 */
-            background: rgba(255, 255, 255, 0.85);
-            /* 针对深色背景图，给文字增加一点点阴影提高可读性（可选） */
-            /* text-shadow: 0 1px 2px rgba(0,0,0,0.1); */
         }
 
-        /* 专门针对标题区域微调一下 */
-        .header {
-            text-align: center; /* 标题居中 */
-            margin-top: 40px; /* 距离顶部远一点 */
+        /* --- 4. 左侧：个人介绍 (Sticky 固定) --- */
+        .profile-sidebar {
+            /* 让它在滚动时固定在窗口顶部 */
+            position: sticky;
+            top: 40px; 
+            height: fit-content; /* 高度自适应内容 */
+            text-align: center;
         }
 
-        /* 让链接颜色好看点 */
-        a {
-            color: #0366d6;
+        .avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid rgba(255, 255, 255, 0.8);
+            margin-bottom: 15px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        .profile-name {
+            font-size: 1.5em;
+            font-weight: 700;
+            margin: 10px 0 5px;
+            color: var(--primary-color);
+        }
+
+        .profile-bio {
+            font-size: 0.9em;
+            color: var(--secondary-text);
+            margin-bottom: 20px;
+        }
+
+        .tags {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 25px;
+        }
+
+        .tag {
+            font-size: 0.75em;
+            background: rgba(52, 152, 219, 0.1);
+            color: var(--accent-color);
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+
+        .social-links a {
+            color: var(--secondary-text);
+            font-size: 1.2em;
+            margin: 0 10px;
+            transition: color 0.3s;
+        }
+        .social-links a:hover {
+            color: var(--accent-color);
+        }
+
+        /* --- 5. 右侧：时间轴随想 --- */
+        .main-content {
+            /* 包含时间轴的容器 */
+        }
+
+        .section-title {
+            font-size: 1.2em;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid rgba(0,0,0,0.05);
+            color: var(--primary-color);
+        }
+
+        /* 时间轴线 */
+        .timeline {
+            position: relative;
+            padding-left: 20px; /* 给左边的线留空间 */
+        }
+        
+        /* 那条竖线 */
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 10px;
+            bottom: 0;
+            width: 2px;
+            background: rgba(0,0,0,0.1);
+        }
+
+        .post-card {
+            margin-bottom: 30px;
+            position: relative; /* 为了定位那个小圆点 */
+        }
+
+        /* 时间轴上的小圆点 */
+        .post-card::before {
+            content: '';
+            position: absolute;
+            left: -26px; /* 调整圆点位置 */
+            top: 24px;
+            width: 10px;
+            height: 10px;
+            background: var(--accent-color);
+            border-radius: 50%;
+            border: 2px solid #fff;
+            box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.3);
+        }
+
+        .post-date {
+            font-size: 0.85em;
+            color: #999;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .post-title {
+            margin: 0 0 10px 0;
+            font-size: 1.3em;
+        }
+        
+        .post-title a {
+            color: var(--primary-color);
             text-decoration: none;
+            transition: color 0.2s;
         }
-        a:hover {
-            text-decoration: underline;
+        
+        .post-title a:hover {
+            color: var(--accent-color);
+        }
+
+        .post-excerpt {
+            font-size: 0.95em;
+            color: #555;
+            margin-bottom: 15px;
+        }
+
+        .read-more {
+            font-size: 0.9em;
+            color: var(--accent-color);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        /* --- 6. 移动端适配 --- */
+        @media (max-width: 768px) {
+            .container {
+                grid-template-columns: 1fr; /* 手机上变成单列 */
+                padding: 20px;
+            }
+            .profile-sidebar {
+                position: relative; /* 手机上取消固定定位 */
+                top: 0;
+            }
         }
     </style>
 </head>
 <body>
 
-    <div class="header">
-        <h1>你好，我是 Slatyfish</h1>
-        <p>这是我纯手工打造的个人网站，主要用来记录生活。</p>
-    </div>
+<div class="container">
+    
+    <aside class="glass-card profile-sidebar">
+        <img src="https://ui-avatars.com/api/?name=Slatyfish&background=random" alt="Avatar" class="avatar">
+        
+        <h1 class="profile-name">Slatyfish</h1>
+        <p class="profile-bio">
+            工科硕士研究生 / Deep Learning<br>
+            专注于水下多波束声纳与点云匹配
+        </p>
 
-    <div class="article-card">
-        <h2>我的第一篇日记</h2>
-        <p>日期：2026-01-18</p>
-        <p>这里写正文内容，比如今天天气不错，我决定放弃 Hexo，开始学习 HTML...</p>
-    </div>
+        <div class="tags">
+            <span class="tag">Python/C++</span>
+            <span class="tag">Point Cloud</span>
+            <span class="tag">Post-Rock</span>
+            <span class="tag">Philosophy</span>
+        </div>
 
-    <div class="article-card">
-        <h2>关于 Deep Learning 的思考</h2>
-        <p>日期：2026-01-17</p>
-        <p>最近在研究点云匹配...</p>
-        <a href="posts/article2.html">点击阅读全文</a> </div>
+        <div class="social-links">
+            <a href="#" title="GitHub"><i class="fab fa-github"></i></a>
+            <a href="#" title="Email"><i class="fas fa-envelope"></i></a>
+            <a href="#" title="RSS"><i class="fas fa-rss"></i></a>
+        </div>
+    </aside>
+
+    <main class="main-content timeline">
+        
+        <div class="glass-card post-card">
+            <span class="post-date">2026-01-18</span>
+            <h2 class="post-title"><a href="#">准备开题答辩的 PPT 架构</a></h2>
+            <p class="post-excerpt">
+                最近一直在整理 A-Predator 模型的实验数据，为了答辩 PPT 的逻辑清晰，重新梳理了从 KPConv 到现有改进的脉络...
+            </p>
+            <a href="#" class="read-more">阅读全文 &rarr;</a>
+        </div>
+
+        <div class="glass-card post-card">
+            <span class="post-date">2026-01-14</span>
+            <h2 class="post-title"><a href="#">C++ 智能指针与内存管理的复习笔记</a></h2>
+            <p class="post-excerpt">
+                在做 ROS 开发时，内存泄漏是个大坑。今天系统复习了 shared_ptr 和 weak_ptr 的使用场景，特别是如何避免循环引用的问题。
+            </p>
+            <a href="#" class="read-more">阅读全文 &rarr;</a>
+        </div>
+
+        <div class="glass-card post-card">
+            <span class="post-date">2026-01-10</span>
+            <h2 class="post-title"><a href="#">读韩炳哲《爱欲之死》有感</a></h2>
+            <p class="post-excerpt">
+                “他者的消失”是现代社会的通病吗？在算法推荐和同质化的信息流中，我们是否正在丧失对他者的渴望与否定性？
+            </p>
+            <a href="#" class="read-more">阅读全文 &rarr;</a>
+        </div>
+
+    </main>
+
+</div>
 
 </body>
 </html>
